@@ -1,0 +1,30 @@
+{
+  "name": "@shmi/helper",
+  "version": "1.0.0",
+  "description": "Firebase Functions Helpers",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "files": [
+    "src"
+  ],
+  "keywords": [
+    "firebase-functions",
+    "firestore-crud",
+    "firestore-rest",
+    "express-server",
+    "json",
+    "json-to-dto",
+    "dto",
+    "validator",
+    "mapper",
+    "typescript",
+    "ts"
+  ],
+  "author": "Maxim Shubin",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/express": "^4.17.1",
+    "firebase-admin": "^8.6.0"
+  }
+}
