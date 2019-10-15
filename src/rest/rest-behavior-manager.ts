@@ -70,8 +70,9 @@ namespace rbm {
 
         public attachRules(cl: dto.Computed, methods: RequestMethod[], handlers: PrioritizedHandler[]): this {
             try {
+                const path = RestBehaviorManager.classToPath(cl.constructor.name);
                 for (const m of methods) {
-                    handlers.forEach(h => this.addMiddleware(cl, m, h));
+                    handlers.forEach(h => this.addMiddleware(path, m, h));
                 }
             } catch (e) {
                 throw e;
@@ -79,8 +80,8 @@ namespace rbm {
             return this;
         }
 
-        public addMiddleware(cl: dto.Computed, method: RequestMethod, handler: PrioritizedHandler): this {
-            const path = RestBehaviorManager.classToPath(cl.constructor.name);
+        public addMiddleware(path: string, method: RequestMethod, handler: PrioritizedHandler): this {
+            // const path = RestBehaviorManager.classToPath(cl.constructor.name);
             if (!this.tree[method]) {
                 this.tree[method] = {};
             }
@@ -102,7 +103,7 @@ namespace rbm {
             return Object.assign({}, p);
         }
 
-        private static classToPath(cl: string): string {
+        public static classToPath(cl: string): string {
             const clName = cl.charAt(0).toLowerCase() + cl.substr(1);
             try {
                 return clName.replace(/([A-Z])/g, (g) => `-${g[0].toLowerCase()}`);
@@ -134,7 +135,7 @@ namespace rbm {
         }
     }
 
-    type RequestMethod = "post" | "get" | "put" | "delete" | "patch" | "all";
+    export type RequestMethod = "post" | "get" | "put" | "delete" | "patch" | "all";
 
     export class BadRequestError extends Error {
     }

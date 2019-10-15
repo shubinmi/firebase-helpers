@@ -253,6 +253,12 @@ export default class FirestoreCrud {
         return this;
     }
 
+    public attachMiddleware(cl: dto.Computed, method: rbm.RequestMethod, handler: rbm.PrioritizedHandler): this {
+        const path = rbm.RestBehaviorManager.classToPath(cl.constructor.name);
+        this.rbMng.addMiddleware(path, method, handler);
+        return this;
+    }
+
     private static outputDataWithCtx(data: dto.ComputedProperties, req: express.Request): dto.ComputedProperties {
         const prototypeSource: dto.Computed = req.app.get(req.params.entity.toLowerCase());
         // noinspection SuspiciousTypeOfGuard
