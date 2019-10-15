@@ -1,6 +1,6 @@
 {
   "name": "@shmi/helper",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Firebase Functions Helpers",
   "sideEffects": false,
   "main": "build/index.js",
