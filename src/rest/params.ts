@@ -1,6 +1,6 @@
 import * as express from "express";
-import {filterUndefinedComputed} from "../computed";
+import Comp from "../computed/dto";
 
-export function getAllParams(req: express.Request) {
-    return filterUndefinedComputed({...req.params, ...req.body, ...req.query});
+export default function getAllParams(req: express.Request) {
+    return Comp.filterUndefinedComputed({...req.params, ...req.body, ...req.query});
 }

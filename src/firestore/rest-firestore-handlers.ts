@@ -1,20 +1,20 @@
 import * as express from "express";
-import {getAllParams} from "../rest/params";
-import {
+import getAllParams from "../rest/params";
+import Comp from "../computed/dto";
+import SearchMeta from "../rest/search-meta";
+import {app, firestore} from "firebase-admin";
+import RBM from "../rest/rest-behavior-manager";
+
+const {
     buildComputed,
-    Computed,
-    ComputedProperties,
     diff,
     filterEmptyComputed,
     setToAllEmptyFields
-} from "../computed";
-import {SearchMeta} from "../rest/search-meta";
-import {app, firestore} from "firebase-admin";
-import {BadRequestError, PrioritizedHandler, RestBehaviorManager} from "../rest/rest-behavior-manager";
+} = Comp;
 
 export default class FirestoreCrud {
 
-    get rbMng(): RestBehaviorManager {
+    get rbMng(): RBM.RestBehaviorManager {
         return this._rbMng;
     }
 
@@ -24,9 +24,9 @@ export default class FirestoreCrud {
 
     private _fbApp: app.App;
 
-    private _rbMng: RestBehaviorManager;
+    private _rbMng: RBM.RestBehaviorManager;
 
-    constructor(fbApp: app.App, rbMng: RestBehaviorManager) {
+    constructor(fbApp: app.App, rbMng: RBM.RestBehaviorManager) {
         this._fbApp = fbApp;
         this._rbMng = rbMng;
     }
@@ -39,10 +39,10 @@ export default class FirestoreCrud {
                 const id = req.params.id;
                 if (!entity) {
                     // noinspection ExceptionCaughtLocallyJS
-                    throw new BadRequestError('Empty required part of path `entity`');
+                    throw new RBM.BadRequestError('Empty required part of path `entity`');
                 }
                 const data: object[] = [];
-                const col = RestBehaviorManager.pathToCollection(entity);
+                const col = RBM.RestBehaviorManager.pathToCollection(entity);
                 if (!id) {
                     const p = getAllParams(req);
                     const meta = buildComputed(SearchMeta, p);
@@ -68,7 +68,7 @@ export default class FirestoreCrud {
                         next();
                         return;
                     }
-                    snapshot.forEach(d => {
+                    snapshot.forEach((d: firestore.QueryDocumentSnapshot) => {
                         const output = FirestoreCrud.outputDataWithCtx(d.data(), req);
                         data.push({id: d.id, ...output});
                     });
@@ -98,9 +98,9 @@ export default class FirestoreCrud {
                 const entity = req.params.entity;
                 if (!entity) {
                     // noinspection ExceptionCaughtLocallyJS
-                    throw new BadRequestError('Empty required part of path `entity`');
+                    throw new RBM.BadRequestError('Empty required part of path `entity`');
                 }
-                const col = RestBehaviorManager.pathToCollection(entity);
+                const col = RBM.RestBehaviorManager.pathToCollection(entity);
                 const p = getAllParams(req);
                 const meta = buildComputed(SearchMeta, p);
                 const id = p.id || undefined;
@@ -137,21 +137,21 @@ export default class FirestoreCrud {
                 const entity = req.params.entity;
                 if (!entity) {
                     // noinspection ExceptionCaughtLocallyJS
-                    throw new BadRequestError('Empty required part of path `entity`');
+                    throw new RBM.BadRequestError('Empty required part of path `entity`');
                 }
                 // noinspection ExceptionCaughtLocallyJS
                 const id = req.params.id;
                 if (!id) {
                     // noinspection ExceptionCaughtLocallyJS
-                    throw new BadRequestError('Empty required part of path `id`');
+                    throw new RBM.BadRequestError('Empty required part of path `id`');
                 }
-                const col = RestBehaviorManager.pathToCollection(entity);
+                const col = RBM.RestBehaviorManager.pathToCollection(entity);
                 const p = getAllParams(req);
                 const meta = buildComputed(SearchMeta, p);
                 const prototype = me.rbMng.getEntityPrototype(entity);
                 if (!prototype) {
                     // noinspection ExceptionCaughtLocallyJS
-                    throw new BadRequestError('Bad entity name. Add this entity to rest CRUD.');
+                    throw new RBM.BadRequestError('Bad entity name. Add this entity to rest CRUD.');
                 }
                 let data = diff({...prototype.toObject(), ...p}, {
                     ...meta.toObject(),
@@ -162,7 +162,7 @@ export default class FirestoreCrud {
                 let fsObj: firestore.DocumentReference;
                 if (await me.findOne(col, id) === null) {
                     // noinspection ExceptionCaughtLocallyJS
-                    throw new BadRequestError('Resource doesn\'t exist');
+                    throw new RBM.BadRequestError('Resource doesn\'t exist');
                 }
                 data = setToAllEmptyFields(data, firestore.FieldValue.delete());
                 fsObj = me.fbApp.firestore().collection(col).doc(id);
@@ -185,22 +185,22 @@ export default class FirestoreCrud {
                 const entity = req.params.entity;
                 if (!entity) {
                     // noinspection ExceptionCaughtLocallyJS
-                    throw new BadRequestError('Empty required part of path `entity`');
+                    throw new RBM.BadRequestError('Empty required part of path `entity`');
                 }
                 // noinspection ExceptionCaughtLocallyJS
                 const id = req.params.id;
                 if (!id) {
                     // noinspection ExceptionCaughtLocallyJS
-                    throw new BadRequestError('Empty required part of path `id`');
+                    throw new RBM.BadRequestError('Empty required part of path `id`');
                 }
-                const col = RestBehaviorManager.pathToCollection(entity);
+                const col = RBM.RestBehaviorManager.pathToCollection(entity);
                 const p = getAllParams(req);
                 const meta = buildComputed(SearchMeta, p);
                 let data = diff(p, {...meta.toObject(), entity: 'entity', id: 'id'});
                 let fsObj: firestore.DocumentReference;
                 if (await me.findOne(col, id) === null) {
                     // noinspection ExceptionCaughtLocallyJS
-                    throw new BadRequestError('Resource doesn\'t exist');
+                    throw new RBM.BadRequestError('Resource doesn\'t exist');
                 }
                 data = filterEmptyComputed(data);
                 fsObj = me.fbApp.firestore().collection(col).doc(id);
@@ -223,15 +223,15 @@ export default class FirestoreCrud {
                 const entity = req.params.entity;
                 if (!entity) {
                     // noinspection ExceptionCaughtLocallyJS
-                    throw new BadRequestError('Empty required part of path `entity`');
+                    throw new RBM.BadRequestError('Empty required part of path `entity`');
                 }
                 // noinspection ExceptionCaughtLocallyJS
                 const id = req.params.id;
                 if (!id) {
                     // noinspection ExceptionCaughtLocallyJS
-                    throw new BadRequestError('Empty required part of path `id`');
+                    throw new RBM.BadRequestError('Empty required part of path `id`');
                 }
-                const col = RestBehaviorManager.pathToCollection(entity);
+                const col = RBM.RestBehaviorManager.pathToCollection(entity);
                 await me.fbApp.firestore().collection(col).doc(id).delete();
                 res.status(204).json();
                 next();
@@ -242,50 +242,50 @@ export default class FirestoreCrud {
         }
     };
 
-    public attachEntity(entity: Computed): this {
+    public attachEntity(entity: Comp.Computed): this {
         this.rbMng
             .addEntity(entity)
-            .attachRules(entity, ['get'], [new PrioritizedHandler(this.find(), 100)])
-            .attachRules(entity, ['post'], [new PrioritizedHandler(this.upsert(), 100)])
-            .attachRules(entity, ['put'], [new PrioritizedHandler(this.update(), 100)])
-            .attachRules(entity, ['patch'], [new PrioritizedHandler(this.patch(), 100)])
-            .attachRules(entity, ['delete'], [new PrioritizedHandler(this.delete(), 100)]);
+            .attachRules(entity, ['get'], [new RBM.PrioritizedHandler(this.find(), 100)])
+            .attachRules(entity, ['post'], [new RBM.PrioritizedHandler(this.upsert(), 100)])
+            .attachRules(entity, ['put'], [new RBM.PrioritizedHandler(this.update(), 100)])
+            .attachRules(entity, ['patch'], [new RBM.PrioritizedHandler(this.patch(), 100)])
+            .attachRules(entity, ['delete'], [new RBM.PrioritizedHandler(this.delete(), 100)]);
         return this;
     }
 
-    private static outputDataWithCtx(data: ComputedProperties, req: express.Request): ComputedProperties {
-        const prototypeSource: Computed = req.app.get(req.params.entity.toLowerCase());
+    private static outputDataWithCtx(data: Comp.ComputedProperties, req: express.Request): Comp.ComputedProperties {
+        const prototypeSource: Comp.Computed = req.app.get(req.params.entity.toLowerCase());
         // noinspection SuspiciousTypeOfGuard
-        if (!(prototypeSource instanceof Computed)) {
+        if (!(prototypeSource instanceof Comp.Computed)) {
             return data;
         }
-        const prototypeTarget: Computed = Object.create(prototypeSource);
+        const prototypeTarget: Comp.Computed = Object.create(prototypeSource);
         Object.assign(prototypeTarget, prototypeSource);
         prototypeTarget.setProps(data);
         if (!prototypeTarget.validate()) {
             // noinspection ExceptionCaughtLocallyJS
-            throw new BadRequestError('Invalid params.');
+            throw new RBM.BadRequestError('Invalid params.');
         }
         return prototypeTarget.output();
     }
 
-    private static inputDataWithCtx(data: ComputedProperties, req: express.Request): ComputedProperties {
-        const prototypeSource: Computed = req.app.get(req.params.entity.toLowerCase());
+    private static inputDataWithCtx(data: Comp.ComputedProperties, req: express.Request): Comp.ComputedProperties {
+        const prototypeSource: Comp.Computed = req.app.get(req.params.entity.toLowerCase());
         // noinspection SuspiciousTypeOfGuard
-        if (!(prototypeSource instanceof Computed)) {
+        if (!(prototypeSource instanceof Comp.Computed)) {
             return data;
         }
-        const prototypeTarget: Computed = Object.create(prototypeSource);
+        const prototypeTarget: Comp.Computed = Object.create(prototypeSource);
         Object.assign(prototypeTarget, prototypeSource);
         prototypeTarget.input(data);
         if (!prototypeTarget.validate()) {
             // noinspection ExceptionCaughtLocallyJS
-            throw new BadRequestError('Invalid params.');
+            throw new RBM.BadRequestError('Invalid params.');
         }
         return prototypeTarget.toObject();
     }
 
-    private async findOne(col: string, id: string): Promise<ComputedProperties | null> {
+    private async findOne(col: string, id: string): Promise<Comp.ComputedProperties | null> {
         try {
             const doc: firestore.DocumentSnapshot = await this.fbApp.firestore()
                 .collection(col)

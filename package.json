@@ -3,12 +3,14 @@
   "version": "1.0.0",
   "description": "Firebase Functions Helpers",
   "sideEffects": false,
+  "main": "./src/index.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/shubinmi/firebase-helpers"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc -p .",
+    "test": "echo \"Error: no test specified\""
   },
   "files": [
     "src"
