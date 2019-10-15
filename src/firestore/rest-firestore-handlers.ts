@@ -148,12 +148,12 @@ export default class FirestoreCrud {
                 const col = rbm.RestBehaviorManager.pathToCollection(entity);
                 const p = getAllParams(req);
                 const meta = buildComputed(SearchMeta, p);
-                const prototype = me.rbMng.getEntityPrototype(entity);
-                if (!prototype) {
+                const prototypeSource: dto.Computed = req.app.get(entity.toLowerCase());
+                if (!prototypeSource) {
                     // noinspection ExceptionCaughtLocallyJS
                     throw new rbm.BadRequestError('Bad entity name. Add this entity to rest CRUD.');
                 }
-                let data = diff({...prototype.toObject(), ...p}, {
+                let data = diff({...prototypeSource.toObject(), ...p}, {
                     ...meta.toObject(),
                     entity: 'entity',
                     id: 'id'

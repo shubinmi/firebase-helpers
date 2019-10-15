@@ -12,16 +12,16 @@ namespace rbm {
         public static reqRoutPathPart = '/:entity/:id?';
 
         public requestHandler(): express.RequestHandler {
-            const rbm = this;
+            const me = this;
             return async function (req: express.Request, res: express.Response, next: express.NextFunction) {
                 let methodBehaviors: PrioritizedHandler[] = [];
                 try {
-                    methodBehaviors = rbm.tree[req.method.toLowerCase()][req.params.entity.toLowerCase()];
+                    methodBehaviors = me.tree[req.method.toLowerCase()][req.params.entity.toLowerCase()];
                 } catch (e) {
                 }
-                req.app.set(req.params.entity.toLowerCase(), rbm.entityPrototypesMap[req.params.entity.toLowerCase()]);
+                req.app.set(req.params.entity.toLowerCase(), me.entityPrototypesMap[req.params.entity.toLowerCase()]);
                 try {
-                    const commonBehaviors = rbm.tree.all[req.params.entity];
+                    const commonBehaviors = me.tree.all[req.params.entity];
                     const bs = methodBehaviors
                         .concat(commonBehaviors)
                         .sort((left, right) => left.priority > right.priority ? 1 : -1);
