@@ -3,7 +3,7 @@
   "version": "1.0.3",
   "description": "Firebase Functions Helpers",
   "sideEffects": false,
-  "main": "build/index.d.ts",
+  "main": "build/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/shubinmi/firebase-helpers"
