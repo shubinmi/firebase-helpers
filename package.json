@@ -3,17 +3,18 @@
   "version": "1.0.2",
   "description": "Firebase Functions Helpers",
   "sideEffects": false,
-  "main": "./src/index.ts",
+  "main": "build/index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/shubinmi/firebase-helpers"
   },
   "scripts": {
+    "prepublish": "yarn build",
     "build": "tsc -p .",
     "test": "echo \"Error: no test specified\""
   },
   "files": [
-    "src"
+    "build"
   ],
   "keywords": [
     "firebase-functions",

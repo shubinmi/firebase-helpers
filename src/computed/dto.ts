@@ -1,4 +1,4 @@
-namespace Comp {
+namespace dto {
     export interface ComputedProperties {
         [key: string]: any;
     }
@@ -227,4 +227,4 @@ namespace Comp {
         return result;
     }
 }
-export default Comp;
+export default dto;

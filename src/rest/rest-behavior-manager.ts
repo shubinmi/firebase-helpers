@@ -1,7 +1,7 @@
 import * as express from "express";
-import Comp from "../computed/dto";
+import dto from "../computed/dto";
 
-namespace RBM {
+namespace rbm {
     export class RestBehaviorManager {
         private tree: RestRouterTree = {
             all: {}
@@ -58,7 +58,7 @@ namespace RBM {
             }
         }
 
-        public addEntity(entity: Comp.Computed): this {
+        public addEntity(entity: dto.Computed): this {
             const path = RestBehaviorManager.classToPath(entity.constructor.name);
             if (this.tree.all.hasOwnProperty(path)) {
                 throw Error('Path `' + path + '` already exist.')
@@ -68,7 +68,7 @@ namespace RBM {
             return this;
         }
 
-        public attachRules(cl: Comp.Computed, methods: RequestMethod[], handlers: PrioritizedHandler[]): this {
+        public attachRules(cl: dto.Computed, methods: RequestMethod[], handlers: PrioritizedHandler[]): this {
             try {
                 for (const m of methods) {
                     handlers.forEach(h => this.addMiddleware(cl, m, h));
@@ -79,7 +79,7 @@ namespace RBM {
             return this;
         }
 
-        public addMiddleware(cl: Comp.Computed, method: RequestMethod, handler: PrioritizedHandler): this {
+        public addMiddleware(cl: dto.Computed, method: RequestMethod, handler: PrioritizedHandler): this {
             const path = RestBehaviorManager.classToPath(cl.constructor.name);
             if (!this.tree[method]) {
                 this.tree[method] = {};
@@ -91,12 +91,12 @@ namespace RBM {
             return this;
         }
 
-        public getEntityPrototype(path: string): Comp.Computed | null {
+        public getEntityPrototype(path: string): dto.Computed | null {
             if (!this.entityPrototypesMap[path]) {
                 return null;
             }
             const p = this.entityPrototypesMap[path];
-            if (p ! instanceof Comp.Computed) {
+            if (p ! instanceof dto.Computed) {
                 return null;
             }
             return Object.assign({}, p);
@@ -140,8 +140,8 @@ namespace RBM {
     }
 
     interface ComputedPrototypesMap {
-        [entity: string]: Comp.Computed,
+        [entity: string]: dto.Computed,
     }
 }
 
-export default RBM;
+export default rbm;
