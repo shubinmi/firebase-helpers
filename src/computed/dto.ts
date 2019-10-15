@@ -81,7 +81,7 @@ namespace dto {
             );
         }
 
-        public getProp(propName: string) {
+        public getProp(propName: string): any {
             try {
                 return getProp(this, propName);
             } catch (e) {
